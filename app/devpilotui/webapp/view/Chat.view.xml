@@ -1,0 +1,52 @@
+<mvc:View
+    controllerName="com.devpilot.devpilotui.controller.Chat"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    displayBlock="true">
+
+    <Page id="chatPage" title="🚀 DevPilot - SAP AI Dev Assistant" class="sapUiResponsiveContentPadding">
+
+        <content>
+            <l:VerticalLayout width="100%">
+
+                <Panel headerText="Conversation" class="sapUiResponsiveMargin" width="auto">
+                    <List id="messageList"
+                          items="{/messages}"
+                          noDataText="Start a new conversation by typing below 👇"
+                          growing="true"
+                          growingThreshold="50">
+                        <CustomListItem>
+                            <HBox class="sapUiSmallMargin"
+                                  justifyContent="{= ${role} === 'user' ? 'End' : 'Start' }">
+                                <VBox class="messageBubble"
+                                      backgroundDesign="{= ${role} === 'user' ? 'Solid' : 'Translucent' }">
+                                    <Text text="{role}" class="messageRole"/>
+                                    <Text text="{content}" class="messageContent"/>
+                                </VBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
+                </Panel>
+
+                <Panel class="sapUiResponsiveMargin" width="auto">
+                    <HBox width="100%">
+                        <TextArea id="inputBox"
+                                  placeholder="Ask DevPilot anything... e.g., 'Build me a CAP service for Purchase Orders'"
+                                  width="100%"
+                                  rows="3"
+                                  growing="true"
+                                  growingMaxLines="6"/>
+                        <Button text="Send"
+                                type="Emphasized"
+                                icon="sap-icon://paper-plane"
+                                press=".onSend"
+                                class="sapUiSmallMarginBegin"/>
+                    </HBox>
+                </Panel>
+
+            </l:VerticalLayout>
+        </content>
+
+    </Page>
+</mvc:View>

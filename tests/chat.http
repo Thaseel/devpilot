@@ -1,0 +1,23 @@
+### Create a conversation
+POST http://localhost:4004/chat/createConversation
+Content-Type: application/json
+
+{
+  "title": "My first chat",
+  "agentType": "router"
+}
+
+### Send a message (paste conversationId from above response)
+POST http://localhost:4004/chat/sendMessage
+Content-Type: application/json
+
+{
+  "conversationId": "PASTE-UUID-HERE",
+  "message": "Hello DevPilot!"
+}
+
+### List conversations
+GET http://localhost:4004/chat/Conversations
+
+### List messages
+GET http://localhost:4004/chat/Messages?$expand=conversation
