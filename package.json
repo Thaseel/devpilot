@@ -4,7 +4,8 @@
   "dependencies": {
     "@cap-js/hana": "^2",
     "@sap/cds": "^9",
-    "@sap/xssec": "^4"
+    "@sap/xssec": "^4",
+    "axios": "^1.16.1"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",
@@ -17,8 +18,19 @@
   "private": true,
   "cds": {
     "requires": {
-      "[production]": {
-        "auth": "xsuaa"
+      "db": {
+        "kind": "sql"
+      },
+      "auth": {
+        "kind": "dummy"
+      },
+      "ai": {
+        "[development]": {
+          "url": "http://localhost:8000"
+        },
+        "[production]": {
+          "url": "https://devpilot-ai-dev.cfapps.us10-001.hana.ondemand.com"
+        }
       }
     }
   },

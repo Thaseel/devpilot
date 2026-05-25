@@ -3,46 +3,104 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
     displayBlock="true">
 
-    <Page id="chatPage" title="🚀 DevPilot - SAP AI Dev Assistant" class="sapUiResponsiveContentPadding">
+    <Page id="chatPage" showHeader="true" class="sapUiContentPadding">
+
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Title text="🚀 DevPilot" level="H2"/>
+                </contentLeft>
+                <contentMiddle>
+                    <Text text="Your SAP AI Development Assistant"/>
+                </contentMiddle>
+                <contentRight>
+                    <ObjectStatus
+                        id="aiStatus"
+                        text="{/aiStatus}"
+                        state="{/aiStatusState}"
+                        icon="sap-icon://artificial-intelligence"/>
+                    <Button icon="sap-icon://refresh" tooltip="New chat" press=".onNewChat"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
 
         <content>
-            <l:VerticalLayout width="100%">
+            <l:VerticalLayout width="100%" class="chatContainer">
 
-                <Panel headerText="Conversation" class="sapUiResponsiveMargin" width="auto">
+                <ScrollContainer
+                    id="messagesScroll"
+                    height="65vh"
+                    width="100%"
+                    vertical="true"
+                    focusable="true">
+
                     <List id="messageList"
                           items="{/messages}"
-                          noDataText="Start a new conversation by typing below 👇"
-                          growing="true"
-                          growingThreshold="50">
-                        <CustomListItem>
-                            <HBox class="sapUiSmallMargin"
-                                  justifyContent="{= ${role} === 'user' ? 'End' : 'Start' }">
-                                <VBox class="messageBubble"
-                                      backgroundDesign="{= ${role} === 'user' ? 'Solid' : 'Translucent' }">
-                                    <Text text="{role}" class="messageRole"/>
-                                    <Text text="{content}" class="messageContent"/>
+                          noDataText="👋 Hi! Ask me anything about SAP development — CAP, UI5, ABAP, debugging. I'll route you to the right specialist."
+                          showSeparators="None">
+                        <CustomListItem class="messageItem">
+                            <FlexBox
+                                width="100%"
+                                justifyContent="{= ${role} === 'user' ? 'End' : 'Start' }"
+                                class="sapUiTinyMargin">
+                                <VBox class="{= ${role} === 'user' ? 'messageBubble userBubble' : 'messageBubble assistantBubble' }">
+                                    <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                        <Text text="{= ${role} === 'user' ? '👤 You' : '🤖 DevPilot' }" class="messageRole"/>
+                                        <ObjectStatus
+                                            text="{agentUsed}"
+                                            state="Information"
+                                            visible="{= ${role} === 'assistant' &amp;&amp; !!${agentUsed} }"
+                                            class="agentBadge"/>
+                                    </HBox>
+                                    <FormattedText htmlText="{contentHtml}" class="messageContent"/>
+                                    <Text
+                                        text="{modelUsed} · {tokensUsed} tokens"
+                                        class="messageMeta"
+                                        visible="{= ${role} === 'assistant' &amp;&amp; !!${modelUsed} }"/>
                                 </VBox>
-                            </HBox>
+                            </FlexBox>
                         </CustomListItem>
                     </List>
-                </Panel>
 
-                <Panel class="sapUiResponsiveMargin" width="auto">
-                    <HBox width="100%">
+                </ScrollContainer>
+
+                <Panel class="inputPanel" width="auto">
+                    <HBox width="100%" alignItems="End">
+                        <Select
+                            id="agentSelect"
+                            selectedKey="auto"
+                            class="agentSelect"
+                            tooltip="Force a specific agent">
+                            <core:Item key="auto" text="🎯 Auto"/>
+                            <core:Item key="cap" text="📦 CAP"/>
+                            <core:Item key="ui5" text="🖥️ UI5"/>
+                            <core:Item key="abap" text="⚙️ ABAP"/>
+                            <core:Item key="debug" text="🐛 Debug"/>
+                            <core:Item key="functional" text="📋 Functional"/>
+                            <core:Item key="general" text="💬 General"/>
+                        </Select>
                         <TextArea id="inputBox"
-                                  placeholder="Ask DevPilot anything... e.g., 'Build me a CAP service for Purchase Orders'"
+                                  placeholder="Ask DevPilot anything... (Shift+Enter for newline, Enter to send)"
                                   width="100%"
-                                  rows="3"
+                                  rows="2"
                                   growing="true"
-                                  growingMaxLines="6"/>
-                        <Button text="Send"
+                                  growingMaxLines="6"
+                                  class="sapUiTinyMarginBeginEnd"
+                                  liveChange=".onInputChange"/>
+                        <Button id="sendBtn"
+                                text="Send"
                                 type="Emphasized"
                                 icon="sap-icon://paper-plane"
                                 press=".onSend"
-                                class="sapUiSmallMarginBegin"/>
+                                enabled="{= !${/isLoading} }"/>
                     </HBox>
+                    <Text
+                        text="⏳ DevPilot is thinking..."
+                        visible="{/isLoading}"
+                        class="loadingHint"/>
                 </Panel>
 
             </l:VerticalLayout>

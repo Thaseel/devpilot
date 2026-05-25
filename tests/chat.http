@@ -1,23 +1,44 @@
-### Create a conversation
+### 0. Check AI service health
+GET http://localhost:4004/chat/aiHealth
+
+### 1. Create a conversation
 POST http://localhost:4004/chat/createConversation
 Content-Type: application/json
 
 {
-  "title": "My first chat",
-  "agentType": "router"
+  "title": "Real AI test",
+  "agentType": "auto"
 }
 
-### Send a message (paste conversationId from above response)
+### 2. Send a CAP question (should auto-route to cap agent)
 POST http://localhost:4004/chat/sendMessage
 Content-Type: application/json
 
 {
-  "conversationId": "PASTE-UUID-HERE",
-  "message": "Hello DevPilot!"
+  "conversationId": "ba79ee27-de62-4b0c-8595-f0c348980d6d",
+  "message": "Create a CAP entity for Books with title, author, ISBN, and stock",
+  "agentType": "auto"
 }
 
-### List conversations
-GET http://localhost:4004/chat/Conversations
+### 3. Send a follow-up (tests memory!)
+POST http://localhost:4004/chat/sendMessage
+Content-Type: application/json
 
-### List messages
-GET http://localhost:4004/chat/Messages?$expand=conversation
+{
+  "conversationId": "ba79ee27-de62-4b0c-8595-f0c348980d6d",
+  "message": "Now add a service that exposes only available books (stock > 0)",
+  "agentType": "auto"
+}
+
+### 4. Send a UI5 question (should route to ui5 agent)
+POST http://localhost:4004/chat/sendMessage
+Content-Type: application/json
+
+{
+  "conversationId": "ba79ee27-de62-4b0c-8595-f0c348980d6d",
+  "message": "Show me a UI5 view that displays these books in a table",
+  "agentType": "auto"
+}
+
+### 5. View all messages with metadata
+GET http://localhost:4004/chat/Messages?$orderby=createdAt asc&$select=role,content,agentUsed,modelUsed,tokensUsed
