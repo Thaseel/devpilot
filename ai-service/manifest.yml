@@ -1,0 +1,13 @@
+applications:
+  - name: devpilot-ai
+    memory: 512M
+    disk_quota: 1G
+    instances: 1
+    buildpacks:
+      - python_buildpack
+    command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    env:
+      LLM_PROVIDER: groq
+      LOG_LEVEL: INFO
+    routes:
+      - route: devpilot-ai-((space)).cfapps.us10-001.hana.ondemand.com
